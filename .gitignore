@@ -169,3 +169,9 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# manim
+media/images/
+media/Tex
+media/texts
+media/videos/partial_movie_files
