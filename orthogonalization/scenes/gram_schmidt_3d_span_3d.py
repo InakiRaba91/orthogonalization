@@ -22,7 +22,7 @@ class GramSchmidt3DSpan3D(ThreeDScene):
             r"\text{Project }\mathbf{v}_2\text{ onto }\mathbf{w}_1\text{ to get }\mathbf{p}",
             r"\text{Subtract the projection from }\mathbf{v}_2",
             r"\text{Normalize to get }\mathbf{w}_2",
-            r"\text{Project }\mathbf{v}_3\text{ onto } s\langle \mathbf{w}_1, \mathbf{w}_2 \rangle",
+            r"\text{Project }\mathbf{v}_3\text{ onto span}(\mathbf{w}_1, \mathbf{w}_2)",
             r"\text{Subtract the projection from }\mathbf{v}_3",
             r"\text{Normalize to get }\mathbf{w}_3",
         ]
@@ -121,8 +121,8 @@ class GramSchmidt3DSpan3D(ThreeDScene):
         plane.set_fill_by_value(axes=axes, colorscale=[ORANGE, ORANGE])
         span_label = MathTex(r"\text{span}(\mathbf{w}_1, \mathbf{w}_2)", color=ORANGE).to_edge(6*RIGHT+2*DOWN)
         self.play(FadeOut(orth_group, proj_vector, proj_label, texts[4]))
-        self.add_fixed_in_frame_mobjects(span_label)
-        self.play(Create(plane), run_time=2)
+        self.add_fixed_in_frame_mobjects(span_label, texts[5])
+        self.play(Create(plane), Write(span_label), Write(texts[5]), run_time=2)
         self.wait(1)
 
         # projection of v3 onto span<v1,v2>
@@ -137,9 +137,8 @@ class GramSchmidt3DSpan3D(ThreeDScene):
 
         #  right angle elbow
         right_angle = get_right_angle_elbow(v1=-proj, v2=t, orig=proj, axes=axes, color=WHITE)
-        self.add_fixed_in_frame_mobjects(texts[5])
         orth_group = VGroup(orth_proj_vector, right_angle)
-        self.play(Create(orth_group), Write(texts[5]), run_time=2)
+        self.play(Create(orth_group), run_time=2)
         self.add_fixed_in_frame_mobjects(proj_label)
         self.play(Create(proj_vector), Write(proj_label), run_time=2)
         self.wait(1)
