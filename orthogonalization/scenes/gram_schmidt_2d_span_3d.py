@@ -1,23 +1,10 @@
-from tkinter import BOTTOM
+
 from manim import *
 
-def get_right_angle_elbow(
-    v1: tuple[float], 
-    v2: tuple[float], 
-    orig: tuple[float], 
-    axes: ThreeDAxes,
-    length: float = 0.4, 
-    color: str = WHITE, 
-    radius_dot: float = 0.02,
-) -> VGroup:
-    u1 = normalize(v1) * length
-    u2 = normalize(v2) * length
-    line1 = Line3D(start=axes.c2p(*(orig + u1)), end=axes.c2p(*(orig + u1 + u2)), color=color)
-    line2 = Line3D(start=axes.c2p(*(orig + u2)), end=axes.c2p(*(orig + u1 + u2)), color=color)
-    dot = Dot3D(point=axes.c2p(*(orig + (u1 + u2) / 2)), color=color, radius=radius_dot)
-    return VGroup(line1, line2, dot)
+from orthogonalization.utils import get_right_angle_elbow
 
-class GramSchmidt2DSpan(ThreeDScene):
+
+class GramSchmidt2DSpan3D(ThreeDScene):
     def construct(self):
 
         axes = ThreeDAxes(
@@ -35,7 +22,7 @@ class GramSchmidt2DSpan(ThreeDScene):
             r"\text{Base vectors: }\mathbf{v}_1, \mathbf{v}_2",
             r"\text{They span a 2D plane}",
             r"\text{Normalize }\mathbf{v}_1\text{ to get }\mathbf{w}_1",
-            r"\text{Project }\mathbf{v}_2\text{ onto }\mathbf{w}_1",
+            r"\text{Project }\mathbf{v}_2\text{ onto }\mathbf{w}_1\text{ to get }\mathbf{p}",
             r"\text{Subtract the projection from }\mathbf{v}_2",
             r"\text{Normalize to get }\mathbf{w}_2",
         ]
@@ -88,8 +75,9 @@ class GramSchmidt2DSpan(ThreeDScene):
         self.wait(1)
 
         # normalize v1
-        w1 = Vector(direction=axes.c2p(*normalize(p1)), color=YELLOW).set_stroke(width=10)
-        v1_transformed = w1.copy()
+        q1 = normalize(p1)
+        w1 = Vector(direction=axes.c2p(*q1), color=YELLOW).set_stroke(width=10)
+        v1_transformed = v1.copy()
         w1_label = MathTex(r"\mathbf{w}_1", color=YELLOW).to_edge(12*LEFT+7.5*UP)
         self.play(FadeOut(texts[1]))
         self.add_fixed_in_frame_mobjects(texts[2])
@@ -99,19 +87,20 @@ class GramSchmidt2DSpan(ThreeDScene):
         self.wait(1)
 
 
-        # projection of v2 onto v1
-        proj = np.dot(p2, normalize(p1)) * normalize(p1)
+        # projection of v1 onto v2
+        proj = np.dot(p2, q1) * q1
         p3 = p2 - proj
-        proj_vector = Vector(direction=axes.c2p(*proj), color=PINK)
+        proj_vector = Vector(direction=axes.c2p(*proj), color=PURPLE)
         orth_proj_vector = Line3D(start=axes.c2p(*proj), end=axes.c2p(*p2), color=WHITE).set_stroke(width=0.5)
-        proj_label = MathTex(r"\mathbf{p}", color=PINK).scale(0.7).to_edge(12*LEFT+67*UP)
+        proj_label = MathTex(r"\mathbf{p}", color=PURPLE).scale(0.7).to_edge(12.3*LEFT+6.8*UP)
         self.play(FadeOut(texts[2]))
-        self.add_fixed_in_frame_mobjects(proj_label, texts[3])
 
         #  right angle elbow
         right_angle = get_right_angle_elbow(v1=-proj, v2=p3, orig=proj, axes=axes, color=WHITE)
+        self.add_fixed_in_frame_mobjects(texts[3])
         self.play(Create(VGroup(orth_proj_vector, right_angle)), Write(texts[3]), run_time=2)
-        self.play(Create(proj_vector), run_time=2)
+        self.add_fixed_in_frame_mobjects(proj_label)
+        self.play(Create(proj_vector), Write(proj_label), run_time=2)
         self.wait(1)
 
         # draw the orthogonal component of v2
