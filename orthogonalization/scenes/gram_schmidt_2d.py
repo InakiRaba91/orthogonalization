@@ -88,4 +88,4 @@ class GramSchmidt2D(Scene):
         self.wait(2)
 
 # To render the scene, run the following command in your terminal:
-# poetry run manimgl orthogonalization/scenes/gram_schmidt_2d_span.py GramSchmidt2DSpan
+# poetry run manimgl orthogonalization/scenes/gram_schmidt_2d.py GramSchmidt2D

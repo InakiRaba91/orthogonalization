@@ -122,4 +122,4 @@ class GramSchmidt2DSpan3D(ThreeDScene):
         self.wait(2)
 
 # To render the scene, run the following command in your terminal:
-# poetry run manimgl gram_schmidt_2d_span.py GramSchmidt2DSpan
+# poetry run manimgl gram_schmidt_2d_span_3d.py GramSchmidt2DSpan3D
